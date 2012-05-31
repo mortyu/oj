@@ -32,6 +32,7 @@ int main(){
 }
 
 int increase(int status,int bitpos){
+    //状态转换。对第n个时钟操作，bitpos = n * 2;
     if( status & (1 << bitpos) ){
         status ^= (2<<bitpos);
     }
@@ -57,6 +58,7 @@ void solve(istream &in,ostream &out){
     int status = 0;
     int tmp;
     for(int i = 0; i < 9; ++i){
+        //转换成18位二进制数。每两位表示一个时钟的状态
         in >> tmp;
         status |= ( (tmp/3%4) << (i*2) );
     }
@@ -78,16 +80,19 @@ void solve(istream &in,ostream &out){
 
 
 stack<int> bfs(int start){
+    //广度优先
 
-    static bool visited[1<<18];
+    //记录到达这一状态的之前操作
     static int edges[1<<18];
+    //记录这一状态的父状态
     static int parent[1<<18];
 
-    memset(visited, 0, sizeof(visited));
     memset(edges, 0, sizeof(edges));
     memset(parent, 0, sizeof(parent));
 
     queue<int> q;
+    stack<int>result;
+    parent[start] = -1;
     q.push(start);
     int status;
     while( !q.empty() ){
@@ -95,38 +100,36 @@ stack<int> bfs(int start){
         status = q.front();
         q.pop();
 
-        if(visited[status]){
-            continue;
-        }else{
-            visited[status] = true;
-        }
-
         int subStatus;
         for(int i = 0; i < 9; ++i){
 
+            //依次做9种操作
             subStatus = doOperation(status, i);
 
             if( parent[subStatus] ){
+                //之前进过队列
                 continue;
             }
-            parent[subStatus];
 
-
+            //记录到达这一状态的之前操作
             edges[subStatus] = i + 1;
+            //记录父状态
             parent[subStatus] = status;
 
             if( subStatus == 0 ){
-                stack<int>s;
+                //找到解,向后找操作路径
                 while( subStatus != start ){
-                    s.push(edges[subStatus]);
+                    result.push(edges[subStatus]);
                     subStatus = parent[subStatus];
                 }
-                return s;
+                return result;
             }
 
             q.push( subStatus ) ;
         }
     }
+
+    return result;
 }
 
 void test(){

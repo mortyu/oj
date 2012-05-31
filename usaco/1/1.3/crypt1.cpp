@@ -37,8 +37,7 @@ bool isValidResult();
 void solve(istream &in,ostream &out){
     //start solve the problem
 
-    in >> digitSetSize;
-
+    in >> digitSetSize; 
     memset(bitmap, 0 ,sizeof(bitmap));
 
     int i = 0;

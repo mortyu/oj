@@ -9,13 +9,14 @@ TASK: $PROG
 #include <fstream>
 #include <cstring>
 #include <string>
+#include <algorithm>
 using namespace std;
 
 void solve(istream &,ostream &);
 
 int main(){
 #ifdef _DEV_
-    solve(fin,fout);
+    solve(cin,cout);
 #else
     ifstream fin("$PROG.in");
     ofstream fout("$PROG.out");
@@ -25,5 +26,6 @@ int main(){
 
 void solve(istream &in,ostream &out){
     //start solve the problem
+    
 }
 

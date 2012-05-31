@@ -36,6 +36,7 @@ void solve(istream &in,ostream &out){
 
     
     static bool bitmap[250*250*2 + 1];
+    static int biSquareSet[sizeof(bitmap)/sizeof(bitmap[0])];
     memset(bitmap, 0, sizeof(bitmap) );
     for(int i = 0; i <= upperBound; ++i){
         for(int j = 0; j<= upperBound; ++j){
@@ -43,26 +44,29 @@ void solve(istream &in,ostream &out){
         }
     }
 
+    int setLen = 0;
+    for(int i = 0, len = upperBound*upperBound*2;
+            i < len; ++i){
+        if(bitmap[i]){
+            biSquareSet[setLen++] = i;
+        }
+    }
 
     int maxnum = upperBound*upperBound*2;
-    int maxDiff = ceil(maxnum / (length-1));
+    int maxDistance = ceil(maxnum / (length-1));
 
     bool hasResult = false;
 
-    /*O(maxDiff*maxStart*length)=O(maxnum^2)*/
-    for(int diff = 1; diff <= maxDiff; ++diff){
+    /*O(maxDistance*maxStart*length)=O(maxnum^2)*/
+    for(int distance = 1; distance <= maxDistance; ++distance){
 
-        int maxStart = maxnum - diff*(length-1);
-        for(int start = 0; start <= maxStart; ++start){
+        int maxStart = maxnum - distance*(length-1);
+        for(int i = 0; i < setLen && biSquareSet[i] <=maxStart ; ++i){
 
-            if( !bitmap[start] ){
-                continue;
-            }
-
-            int t = start;
+            int t = biSquareSet[i];
             int n;
             for(n = 1; n < length; ++n){
-                t+=diff;
+                t+=distance;
                 if(t>maxnum||!bitmap[t]){
                     break;
                 }
@@ -71,7 +75,7 @@ void solve(istream &in,ostream &out){
             if( n == length ){
                 //found
                 hasResult = true;
-                out<<start<<' '<<diff<<endl;
+                out << biSquareSet[i] << ' ' << distance <<endl;
             }
 
         }
