@@ -9,7 +9,6 @@ TASK: checker
 #include <fstream>
 #include <cstring>
 #include <string>
-#include <algorithm>
 using namespace std;
 
 void solve(istream &,ostream &);
@@ -41,7 +40,7 @@ void solve(istream &in,ostream &out){
 
     memset(checkBoard, 0, sizeof(checkBoard) );
     dfs(0);
-    *output << solutionsNumber << endl;
+    out<< solutionsNumber << endl;
 
 }
 
@@ -52,7 +51,7 @@ void outputSolution(){
             *output << solution[i];
             first = false;
         }else{
-            *output << ' ' << solution[i];
+            *output << ' ' << solution[i] ;
         }
     }
     *output << endl;
@@ -69,7 +68,8 @@ void dfs(int depth){
     }
 
     char saved[sizeof(checkBoard)];
-    memcpy(saved, checkBoard, sizeof(checkBoard));
+    //保存整个checkBoard会TLE
+    memcpy(saved, checkBoard[depth+1], sizeof(checkBoard[0])*(size-depth-1) );
 
     for(int i = 0; i < size; ++i){
 
@@ -78,7 +78,7 @@ void dfs(int depth){
             continue;
         }
 
-        memcpy(checkBoard, saved, sizeof(checkBoard));
+        memcpy(checkBoard[depth+1], saved, sizeof(checkBoard[0])*(size-depth-1) );
 
         for(int j = depth+1; j < size; ++j){
 
