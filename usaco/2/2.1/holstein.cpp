@@ -26,19 +26,48 @@ int main(){
 }
 
 int vitaminNumber;
-int needs[1000];
+int needs[25];
 int types;
-int amounts[15][1000];
 
-int solutionCnt = 0;
+int amounts[15][25];
+int path[15];
+int solution[15];
 
-int getNumberOfOne(int number){
-    int cnt = 0;
-    while(number){
-        number &= number-1;
-        cnt++;
+int minNumber = INT_MAX;
+
+void backtrace(int depth, int cnt) {
+
+    if(depth > types) {
+        return;
     }
-    return cnt;
+
+    int i;
+    for(i = 0; i < vitaminNumber; ++i) {
+        if(needs[i] > 0) {
+            break;
+        }
+    }
+
+    if(i == vitaminNumber) {
+        if(cnt < minNumber){
+            minNumber = cnt;
+            memcpy(solution, path, sizeof(solution));
+        }
+        //不需要其他feeds，不需要继续回溯
+        return;
+    }
+
+
+    int saved[vitaminNumber];
+    memcpy(saved, needs, sizeof(int)*vitaminNumber);
+    for(i = 0; i < vitaminNumber; ++i) {
+        needs[i] -= amounts[depth][i];
+    }
+    path[cnt] = depth;
+    backtrace(depth+1, cnt+1);
+    memcpy(needs, saved, sizeof(int)*vitaminNumber);
+    backtrace(depth+1, cnt);
+
 }
 
 void solve(istream &in,ostream &out){
@@ -47,6 +76,7 @@ void solve(istream &in,ostream &out){
     for(int i = 0; i < vitaminNumber; ++i){
         in >> needs[i];
     }
+
     in >> types;
     for(int i = 0; i < types; ++i) {
         for(int j = 0; j < vitaminNumber; ++j) {
@@ -54,44 +84,10 @@ void solve(istream &in,ostream &out){
         }
     }
 
-    int tmp[vitaminNumber];
-    int max = (1 << types);
-    int minNumber = INT_MAX;
-    int solution = INT_MAX;
-    for(int i = 1; i < max; ++i){
-        memcpy(tmp, needs, sizeof(int)*vitaminNumber);
-        for(int j = 0; j < types; ++j){
-            if( (1 << j) & i ){
-                for(int k = 0; k < vitaminNumber; ++k){
-                    tmp[k] -= amounts[j][k];
-                }
-            }
-        }
-
-        int k;
-
-        for(k = 0; k < vitaminNumber; ++k){
-            if(tmp[k]>0){
-                break;
-            }
-        }
-
-        if( k == vitaminNumber ){
-            int numberof1 = getNumberOfOne(i);
-            if(numberof1 == minNumber){
-                solution = min(solution, i);
-            }else if(numberof1 < minNumber){
-                minNumber = numberof1;
-                solution = i;
-            }
-        }
-    }
-
+    backtrace(0, 0);
     out << minNumber;
-    for(int j = 0; j < types; ++j){
-        if( (1 << j) & solution){
-            out << ' ' << (j+1);
-        }
+    for(int i = 0; i < minNumber; ++i) {
+        out << ' ' << (solution[i] + 1);
     }
     out << endl;
 

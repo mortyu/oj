@@ -40,11 +40,15 @@ struct fraction{
     };
 
     bool operator< (const fraction &b) const{
-        return  numerator * b.denominator - b.numerator*denominator < 0;
+        if( denominator == b.denominator){
+            return numerator - b.numerator < 0;
+        }else{
+            return  numerator * b.denominator - b.numerator*denominator < 0;
+        }
     }
 
     bool operator == (const fraction &b) const{
-        return  b.numerator * denominator == numerator*b.denominator;
+        return  numerator == b.numerator && denominator == b.denominator;
     }
 
     int gcd(int m, int n){
