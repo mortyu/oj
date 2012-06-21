@@ -28,44 +28,27 @@ const int NOT_VISITED = -1;
 int dp[200][100];
 
 int compute(int number, int depth){
-    //compute 返回树的结点数为number,高度为depth的pedigree形态数
+    //compute 返回树的结点数为number,高度<=depth的pedigree形态数
 
     if(dp[number][depth]!=NOT_VISITED){
         return dp[number][depth];
     }
 
-    if(number%2!=1 || depth <= 0 || number < depth){
+    if(number%2!=1 || depth <= 0){
         dp[number][depth] = 0;
         return 0;
     }
 
-    if(number == 1){
-        //只有一个节点时，形态种类为1
-        dp[number][depth] = 1;
-        return 1;
-    }
-
     int result = 0;
-    for(int leftNumber = 1; leftNumber < number - 1; leftNumber += 2){
+    for(int leftNumber = 1; leftNumber < (number - 1)/2; leftNumber += 2){
         //左子树节点数从1到number-2的情况。因为偶数结点不能形成pedigree,所以每次+2
-
-        for(int leftDepth = 1; leftDepth < depth-1; ++leftDepth){
-            //左子树的高度为1~(depth-2),右子树高度为depth-1
-            result += compute(leftNumber, leftDepth) * compute(number - 1 - leftNumber, depth - 1);
-            result %= 9901;
-        }
-
-        for(int rightDepth = 1; rightDepth < depth-1; ++rightDepth){
-            //左子树的高度为depth-1,右子树高度为(1~depth-2)的情况
-            result += compute(leftNumber, depth-1) * compute(number - 1 - leftNumber, rightDepth);
-            result %= 9901;
-        }
-
-        //左右子树均为depth-1的情况
         result += compute(leftNumber,depth-1) * compute(number-1-leftNumber,depth-1);
         result %= 9901;
     }
 
+    result *= 2;
+    result += compute((number-1)/2, depth-1)  *  compute((number-1)/2,depth-1);
+    result %= 9901;
 
     dp[number][depth] = result;
     return result;
@@ -74,6 +57,7 @@ int compute(int number, int depth){
 
 void solve(istream &in,ostream &out){
 
+    dp[1][1] = 1;
     for(int i = 0; i < sizeof(dp)/sizeof(dp[0]); ++i){
         for(int j = 0; j < sizeof(dp[0])/sizeof(dp[0][0]); ++j){
             dp[i][j] = NOT_VISITED;
@@ -83,7 +67,7 @@ void solve(istream &in,ostream &out){
     int number, depth;
     in >> number >> depth;
 
-    out << compute(number, depth) << endl;
+    out << (9901 + compute(number, depth) - compute(number, depth-1) ) % 9901 << endl;
 
 }
 
