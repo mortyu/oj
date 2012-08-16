@@ -61,7 +61,8 @@ int prim_mst(){
 
     int mst = 0;
     pq.push(queue_node(0, 0));
-    while(!pq.empty()){
+    int left = node_number;
+    while(!pq.empty() && left){
         queue_node node = pq.top();
         pq.pop();
         //已加入最小生成树，忽略
@@ -70,6 +71,7 @@ int prim_mst(){
         }
         //当前生成树之外的最外结点，加进来
         mark[node.vertex] = true;
+        left--;
         mst += node.cost;
         for(int i = 0; i < node_number; ++i){
             if(i != node.vertex && !mark[i]){
